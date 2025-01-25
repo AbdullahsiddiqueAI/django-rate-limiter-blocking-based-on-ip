@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class IPBlock(models.Model):
     ip_address = models.GenericIPAddressField(unique=True)
     reason = models.TextField(null=True, blank=True)
@@ -8,13 +7,20 @@ class IPBlock(models.Model):
 
     def __str__(self):
         return self.ip_address
+
+
 class RateLimitRule(models.Model):
-    path = models.CharField(max_length=255, unique=True)  # API route (e.g., /api/some-endpoint/)
+    ip_address = models.GenericIPAddressField(null=True,blank=True)  # The specific IP to apply the rule
+    path = models.CharField(max_length=255)  # The API route (e.g., /api/some-endpoint/)
     max_requests = models.PositiveIntegerField(default=10)  # Maximum allowed requests
     window_seconds = models.PositiveIntegerField(default=60)  # Time window in seconds
 
+    class Meta:
+        unique_together = ('ip_address', 'path')  # Ensure unique rules per IP and path
+
     def __str__(self):
-        return f"{self.path} - {self.max_requests} reqs in {self.window_seconds}s"
+        return f"{self.ip_address} - {self.path} - {self.max_requests} reqs in {self.window_seconds}s"
+
 class RequestLog(models.Model):
     ip_address = models.GenericIPAddressField()
     path = models.CharField(max_length=255)  # API route accessed

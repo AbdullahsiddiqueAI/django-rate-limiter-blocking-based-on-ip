@@ -11,8 +11,8 @@ class IPBlockAdmin(admin.ModelAdmin):
 
 @admin.register(RateLimitRule)
 class RateLimitRuleAdmin(admin.ModelAdmin):
-    list_display = ("path", "max_requests", "window_seconds")
-    search_fields = ("path",)
+    list_display = ("ip_address","path", "max_requests", "window_seconds")
+    search_fields = ("path","ip_address")
     list_filter = ("window_seconds",)
 
 

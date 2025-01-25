@@ -11,18 +11,18 @@ class DynamicIPRateLimitMiddleware:
 
     def __call__(self, request):
         ip = self.get_client_ip(request)
-        print(f"Client IP: {ip}")
         logger.info(f"Client IP: {ip}")
 
-        # Block IP dynamically
+        # Check if the IP is blocked
         if IPBlock.objects.filter(ip_address=ip).exists():
             return JsonResponse({"error": "Access blocked for this IP"}, status=403)
 
-        # Get rate limit rule for the current path
+        # Get the path
         path = request.path
-        print(f"Requested Path: {path}")
         logger.info(f"Requested Path: {path}")
-        rate_limit_rule = RateLimitRule.objects.filter(path=path).first()
+
+        # Check for a rate limit rule specific to this IP and path
+        rate_limit_rule = RateLimitRule.objects.filter(ip_address=ip, path=path).first()
 
         if rate_limit_rule:
             rate_limit_result = self.apply_rate_limit(ip, path, rate_limit_rule)
@@ -32,7 +32,7 @@ class DynamicIPRateLimitMiddleware:
             remaining, total_requests = rate_limit_result
             response = self.get_response(request)
 
-            # Add headers or JSON data to track remaining requests
+            # Add headers to track rate-limiting information
             if response.status_code == 200:
                 response["X-RateLimit-Remaining"] = remaining
                 response["X-RateLimit-Total"] = total_requests
@@ -47,7 +47,7 @@ class DynamicIPRateLimitMiddleware:
         Returns the remaining requests and total request count as a tuple,
         or a JsonResponse if the rate limit is exceeded.
         """
-        key = f"rate_limit_{ip}_{path}"
+        key = f"rate_limit_{ip}_{path}"  # Create a unique cache key for this IP and path
         request_count = cache.get(key, 0)
 
         if request_count >= rule.max_requests:
