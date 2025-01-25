@@ -1,0 +1,62 @@
+# Byte-compiled Python files
+__pycache__/
+*.py[cod]
+
+# Django migrations
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.py
+
+# Environment variables
+.env
+
+# SQLite database files
+db.sqlite3
+
+# Virtual environment
+venv/
+env/
+
+# Logs
+*.log
+
+# Media files (optional)
+media/
+
+# Static files (optional, if managed by collectstatic)
+staticfiles/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS system files
+.DS_Store
+
+# Test coverage reports
+htmlcov/
+*.cover
+*.py,cover
+
+# Linting and analysis tools
+*.pylint.d
+*.mypy_cache/
+*.pytest_cache/
+
+# Docker files
+*.dockerignore
+docker-compose.override.yml
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Node.js files (if applicable)
+node_modules/
+*.map
+**.*.migrations
+**.*.pem
+../ubuntu.txt
